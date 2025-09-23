@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Brain, Sparkles, FileText, ArrowRight, Mic, Type, Wand2, Star, Zap, BookOpen, Copy, Check, AlertCircle, TrendingUp, Users, Award, Clock, Play, ChevronDown, Lightbulb, Rocket, Shield } from "lucide-react";
+import { Brain, Sparkles, FileText, ArrowRight, Mic, Type, Wand2, Star, Zap, BookOpen, Check, AlertCircle, TrendingUp, Users, Award, Clock, Play, ChevronDown, Lightbulb, Rocket, Shield } from "lucide-react";
 
 export default function Home() {
   const [transcript, setTranscript] = useState("");

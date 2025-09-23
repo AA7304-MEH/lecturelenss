@@ -2,15 +2,10 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   /* config options here */
-  experimental: {
-    turbopack: {
-      enable: process.env.NODE_ENV === 'development'
-    }
-  },
+  
   // Production optimizations
   poweredByHeader: false,
   reactStrictMode: true,
-  swcMinify: true,
   
   // Image optimization
   images: {

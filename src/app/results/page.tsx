@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Copy, Save, ArrowLeft, FileText, Sparkles, Check, Download, Share } from "lucide-react";
+import { Copy, Save, ArrowLeft, FileText, Sparkles, Check } from "lucide-react";
 
 export default function Results() {
   const [transcript, setTranscript] = useState("");
@@ -10,7 +10,6 @@ export default function Results() {
   const [copied, setCopied] = useState(false);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
-  const [isVisible, setIsVisible] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -24,7 +23,6 @@ export default function Results() {
 
     setTranscript(storedTranscript);
     setSummary(storedSummary);
-    setIsVisible(true);
   }, [router]);
 
   const handleCopy = async () => {
