@@ -1,0 +1,5 @@
+[33m04bbfe2[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m)[m Fix API: Update Gemini model to gemini-1.5-flash - API now working correctly
+[33mbe5789c[m Update README with comprehensive documentation and features
+[33m430ad5a[m Enhanced landing page with beautiful UI, animations, and improved functionality
+[33m07c262b[m Add Vercel deployment configuration
+[33m727c731[m Initial commit: LectureLens AI-powered lecture summarizer
