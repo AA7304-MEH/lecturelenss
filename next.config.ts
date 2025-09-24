@@ -2,15 +2,18 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   /* config options here */
+  output: 'export',
+  trailingSlash: true,
+  skipTrailingSlashRedirect: true,
+  distDir: 'out',
   
   // Production optimizations
   poweredByHeader: false,
   reactStrictMode: true,
   
-  // Image optimization
+  // Image optimization (disabled for static export)
   images: {
-    domains: ['jlftcryoscvofazjmjbm.supabase.co'],
-    formats: ['image/webp', 'image/avif'],
+    unoptimized: true,
   },
   
   // Headers for security and performance

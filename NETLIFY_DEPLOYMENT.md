@@ -1,6 +1,6 @@
-# 🚀 LectureLens Netlify Deployment Guide
+# 🚀 LectureLens Netlify Deployment Guide - UPDATED
 
-## 📋 Quick Setup
+## 📋 Quick Setup for Static Export
 
 ### Step 1: Deploy to Netlify
 
@@ -13,10 +13,10 @@
    - Choose your repository: `AA7304-MEH/lecturelens`
    - Click "Deploy site"
 
-3. **Build Settings** (auto-detected)
+3. **Build Settings** (should auto-detect)
    ```
-   Build command: npm run build
-   Publish directory: .next
+   Build command: npm run build && npm run export
+   Publish directory: out
    ```
 
 ### Step 2: Environment Variables
