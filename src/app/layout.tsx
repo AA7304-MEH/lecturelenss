@@ -52,6 +52,26 @@ export default function RootLayout({
         <main className="pt-16">
           {children}
         </main>
+        <footer className="mt-20 border-t border-white/10 bg-gradient-to-br from-white/5 to-transparent">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+            <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+              <div className="flex items-center space-x-2">
+                <Brain className="w-6 h-6 text-purple-300" />
+                <span className="font-semibold text-white">LectureLens</span>
+              </div>
+              <p className="text-sm text-gray-400 text-center md:text-left">
+                Transform lectures into structured notes with AI. Built with Next.js & Netlify.
+              </p>
+              <div className="flex items-center gap-4 text-sm text-gray-400">
+                <Link href="/" className="hover:text-white transition-colors">Home</Link>
+                <Link href="/history" className="hover:text-white transition-colors">History</Link>
+              </div>
+            </div>
+            <div className="mt-6 text-center text-xs text-gray-500">
+              © {new Date().getFullYear()} LectureLens. All rights reserved.
+            </div>
+          </div>
+        </footer>
       </body>
     </html>
   );

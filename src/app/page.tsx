@@ -2,7 +2,46 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Brain, Sparkles, FileText, ArrowRight, Mic, Type, Wand2, Star, Zap, BookOpen, Check, AlertCircle, TrendingUp, Users, Award, Clock, Play, ChevronDown, Lightbulb, Rocket, Shield } from "lucide-react";
+import { Brain, Sparkles, FileText, ArrowRight, Mic, Type, Wand2, Star, BookOpen, Check, AlertCircle, Award, Clock, Play, ChevronDown, Lightbulb, Rocket, Shield, Square } from "lucide-react";
+
+// Speech Recognition types
+interface SpeechRecognition extends EventTarget {
+  continuous: boolean;
+  interimResults: boolean;
+  lang: string;
+  start(): void;
+  stop(): void;
+  onresult: ((event: SpeechRecognitionEvent) => void) | null;
+  onerror: ((event: SpeechRecognitionErrorEvent) => void) | null;
+  onend: (() => void) | null;
+}
+
+interface SpeechRecognitionEvent extends Event {
+  resultIndex: number;
+  results: SpeechRecognitionResultList;
+}
+
+interface SpeechRecognitionResultList {
+  length: number;
+  item(index: number): SpeechRecognitionResult;
+  [index: number]: SpeechRecognitionResult;
+}
+
+interface SpeechRecognitionResult {
+  isFinal: boolean;
+  [index: number]: SpeechRecognitionAlternative;
+  item(index: number): SpeechRecognitionAlternative;
+}
+
+interface SpeechRecognitionAlternative {
+  transcript: string;
+  confidence: number;
+}
+
+interface SpeechRecognitionErrorEvent extends Event {
+  error: string;
+  message: string;
+}
 
 export default function Home() {
   const [transcript, setTranscript] = useState("");
@@ -13,6 +52,9 @@ export default function Home() {
   const [isFocused, setIsFocused] = useState(false);
   const [currentSlide, setCurrentSlide] = useState(0);
   const [showDemo, setShowDemo] = useState(false);
+	const [isRecording, setIsRecording] = useState(false);
+	const [isTranscribing, setIsTranscribing] = useState(false);
+	const [recognition, setRecognition] = useState<SpeechRecognition | null>(null);
   const router = useRouter();
 
   useEffect(() => {
@@ -23,6 +65,41 @@ export default function Home() {
     const interval = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % 3);
     }, 4000);
+		
+		// Initialize speech recognition
+		if (typeof window !== 'undefined' && 'webkitSpeechRecognition' in window) {
+			const SpeechRecognition = (window as unknown as { webkitSpeechRecognition: new () => SpeechRecognition }).webkitSpeechRecognition;
+			const recognition = new SpeechRecognition();
+			recognition.continuous = true;
+			recognition.interimResults = true;
+			recognition.lang = 'en-US';
+			
+			recognition.onresult = (event: SpeechRecognitionEvent) => {
+				let finalTranscript = '';
+				
+				for (let i = event.resultIndex; i < event.results.length; i++) {
+					const transcript = event.results[i][0].transcript;
+					if (event.results[i].isFinal) {
+						finalTranscript += transcript;
+					}
+				}
+				
+				setTranscript(prev => prev + finalTranscript);
+			};
+			
+			recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
+				console.error('Speech recognition error:', event.error);
+				setIsRecording(false);
+				setIsTranscribing(false);
+			};
+			
+			recognition.onend = () => {
+				setIsRecording(false);
+				setIsTranscribing(false);
+			};
+			
+			setRecognition(recognition);
+		}
     
     return () => clearInterval(interval);
   }, [transcript]);
@@ -43,10 +120,15 @@ export default function Home() {
       });
 
       if (!response.ok) {
-        throw new Error("Failed to generate summary");
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || `HTTP ${response.status}: Failed to generate summary`);
       }
 
       const data = await response.json();
+      
+      if (!data.summary) {
+        throw new Error("No summary received from server");
+      }
       
       sessionStorage.setItem("transcript", transcript);
       sessionStorage.setItem("summary", data.summary);
@@ -54,9 +136,27 @@ export default function Home() {
       router.push("/results");
     } catch (error) {
       console.error("Error:", error);
-      alert("Failed to generate summary. Please try again.");
+      alert(`Failed to generate summary: ${error instanceof Error ? error.message : 'Unknown error'}`);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const startRecording = () => {
+    if (recognition) {
+      setIsRecording(true);
+      setIsTranscribing(true);
+      recognition.start();
+    } else {
+      alert("Speech recognition not supported in this browser. Please use Chrome or Edge.");
+    }
+  };
+
+  const stopRecording = () => {
+    if (recognition) {
+      recognition.stop();
+      setIsRecording(false);
+      setIsTranscribing(false);
     }
   };
 
@@ -97,50 +197,35 @@ export default function Home() {
       </div>
 
       {/* Hero Section */}
-      <section className="relative py-12 sm:py-20 lg:py-32 px-4 text-center overflow-hidden">
+      <section className="relative py-16 sm:py-24 lg:py-36 px-4 text-center overflow-hidden">
         <div className={`max-w-6xl mx-auto transition-all duration-1000 ${isVisible ? 'animate-slide-in-up' : 'opacity-0'}`}>
-          <div className="relative mb-8 lg:mb-12">
+          <div className="relative mb-6 lg:mb-10">
             <div className="animate-float sparkle glow relative">
               <Brain className="w-16 h-16 sm:w-20 sm:h-20 lg:w-24 lg:h-24 mx-auto mb-6 text-purple-400" />
               <div className="absolute -inset-4 bg-purple-500/20 rounded-full blur-xl animate-pulse-slow"></div>
             </div>
-            <div className="absolute -top-2 -left-2 animate-float-delayed">
-              <Star className="w-6 h-6 text-yellow-400 opacity-70" />
-            </div>
-            <div className="absolute -top-1 -right-1 animate-float">
-              <Zap className="w-5 h-5 text-blue-400 opacity-60" />
-            </div>
-            <div className="absolute -bottom-2 -left-1 animate-float-delayed">
-              <Sparkles className="w-4 h-4 text-pink-400 opacity-50" />
-            </div>
-            <div className="absolute -bottom-1 -right-2 animate-float">
-              <Star className="w-4 h-4 text-purple-400 opacity-60" />
-            </div>
           </div>
           
-          <h1 className="text-4xl sm:text-6xl lg:text-8xl font-bold mb-6 lg:mb-8">
-            <span className="gradient-text block animate-slide-in-up stagger-1">LectureLens</span>
+          <h1 className="text-4xl sm:text-6xl lg:text-8xl font-bold mb-4 lg:mb-6 leading-tight">
+            <span className="gradient-text block">LectureLens</span>
           </h1>
-          
-          <div className="mb-6 lg:mb-8">
-            <p className="text-lg sm:text-xl lg:text-3xl text-gray-300 mb-4 max-w-4xl mx-auto leading-relaxed animate-slide-in-up stagger-2">
-              Transform your lectures into 
-              <span className="gradient-text font-bold"> structured notes </span>
-              with AI-powered summarization
-            </p>
-            
-            <div className="flex items-center justify-center space-x-3 text-purple-300 mb-8 animate-pulse-slow animate-slide-in-up stagger-3">
+          <p className="text-base sm:text-xl lg:text-2xl text-gray-300 max-w-3xl mx-auto mb-8 lg:mb-10 leading-relaxed">
+            Turn long lectures into clear, structured notes in seconds.
+          </p>
+
+          <div className="flex items-center justify-center space-x-3 text-purple-300 mb-10 animate-pulse-slow">
               <Sparkles className="w-5 h-5 sm:w-6 sm:h-6" />
-              <span className="text-base sm:text-lg lg:text-xl font-medium">Powered by AI</span>
+            <span className="text-base sm:text-lg lg:text-xl font-medium">Powered by Google Gemini AI</span>
               <Sparkles className="w-5 h-5 sm:w-6 sm:h-6" />
-            </div>
           </div>
 
           {/* Action Buttons */}
-          <div className="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-6 mb-12 animate-slide-in-up stagger-4">
+          <div className="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-6 mb-12">
             <button
               onClick={scrollToInput}
               className="btn-primary text-lg px-8 py-4 group relative overflow-hidden"
+              aria-label="Get started"
+              title="Get started"
             >
               <span className="relative z-10 flex items-center">
                 Get Started Now
@@ -150,6 +235,8 @@ export default function Home() {
             <button
               onClick={handleDemo}
               className="btn-secondary text-lg px-8 py-4 group flex items-center"
+              aria-label="Try demo"
+              title="Try demo"
             >
               <Play className="w-5 h-5 mr-2 group-hover:scale-110 transition-transform" />
               Try Demo
@@ -160,36 +247,11 @@ export default function Home() {
           <div className="animate-bounce">
             <ChevronDown className="w-8 h-8 mx-auto text-purple-400 opacity-60" />
           </div>
-
-          {/* Stats Section */}
-          <div className="grid grid-cols-3 gap-4 max-w-2xl mx-auto mt-16">
-            <div className="text-center glass-card p-4 rounded-lg group hover:scale-105 transition-all duration-500">
-              <div className="flex items-center justify-center mb-2">
-                <Users className="w-5 h-5 text-purple-400 mr-2 group-hover:rotate-12 transition-transform" />
-                <span className="text-2xl font-bold text-white">10K+</span>
-              </div>
-              <p className="text-sm text-gray-400">Students Helped</p>
-            </div>
-            <div className="text-center glass-card p-4 rounded-lg group hover:scale-105 transition-all duration-500">
-              <div className="flex items-center justify-center mb-2">
-                <TrendingUp className="w-5 h-5 text-green-400 mr-2 group-hover:rotate-12 transition-transform" />
-                <span className="text-2xl font-bold text-white">98%</span>
-              </div>
-              <p className="text-sm text-gray-400">Accuracy Rate</p>
-            </div>
-            <div className="text-center glass-card p-4 rounded-lg group hover:scale-105 transition-all duration-500">
-              <div className="flex items-center justify-center mb-2">
-                <Clock className="w-5 h-5 text-blue-400 mr-2 group-hover:rotate-12 transition-transform" />
-                <span className="text-2xl font-bold text-white">&lt;30s</span>
-              </div>
-              <p className="text-sm text-gray-400">Processing Time</p>
-            </div>
-          </div>
         </div>
       </section>
 
       {/* How It Works */}
-      <section className="py-16 px-4">
+      <section id="input-section" className="py-16 px-4">
         <div className="max-w-6xl mx-auto">
           <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
             How It Works
@@ -200,21 +262,21 @@ export default function Home() {
                 <Mic className="w-8 h-8 text-white" />
               </div>
               <h3 className="text-xl font-semibold mb-4 text-white">1. Record</h3>
-              <p className="text-gray-300 leading-relaxed">Record your lecture using any device or recording app of your choice</p>
+							<p className="text-gray-300 leading-relaxed">Record your lecture directly in the browser or paste an existing transcript</p>
             </div>
             <div className="glass-card p-8 text-center group hover:scale-105 transition-all duration-500">
               <div className="w-16 h-16 mx-auto mb-6 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-2xl flex items-center justify-center group-hover:rotate-12 transition-transform duration-300">
                 <Type className="w-8 h-8 text-white" />
               </div>
-              <h3 className="text-xl font-semibold mb-4 text-white">2. Transcribe</h3>
-              <p className="text-gray-300 leading-relaxed">Use your device&apos;s speech-to-text feature to get a transcript</p>
+							<h3 className="text-xl font-semibold mb-4 text-white">2. Auto-Transcribe</h3>
+							<p className="text-gray-300 leading-relaxed">Speech-to-text automatically converts your recording to text</p>
             </div>
             <div className="glass-card p-8 text-center group hover:scale-105 transition-all duration-500">
               <div className="w-16 h-16 mx-auto mb-6 bg-gradient-to-br from-purple-500 to-blue-500 rounded-2xl flex items-center justify-center group-hover:rotate-12 transition-transform duration-300">
                 <Wand2 className="w-8 h-8 text-white" />
               </div>
-              <h3 className="text-xl font-semibold mb-4 text-white">3. Summarize</h3>
-              <p className="text-gray-300 leading-relaxed">Paste here and get AI-powered structured notes instantly</p>
+							<h3 className="text-xl font-semibold mb-4 text-white">3. AI Summarize</h3>
+							<p className="text-gray-300 leading-relaxed">Get AI-powered structured notes and summaries instantly</p>
             </div>
           </div>
         </div>
@@ -233,21 +295,56 @@ export default function Home() {
                   <FileText className="w-7 h-7 mr-3 text-purple-400" />
                   <div className="absolute -inset-2 bg-purple-500/20 rounded-full blur-md animate-pulse-slow"></div>
                 </div>
-                <h2 className="text-2xl lg:text-3xl font-bold text-white">Paste Your Lecture Transcript</h2>
+                <h2 className="text-2xl lg:text-3xl font-bold text-white">Record or Paste Your Lecture</h2>
               </div>
+              <div className="flex items-center space-x-4">
               <div className="relative">
                 <button
                   onMouseEnter={() => setShowTooltip(true)}
                   onMouseLeave={() => setShowTooltip(false)}
                   className="text-gray-400 hover:text-white transition-colors group"
+                    aria-label="Transcript help tooltip"
+                    title="How to get a transcript"
                 >
                   <AlertCircle className="w-5 h-5 group-hover:scale-110 transition-transform" />
                 </button>
                 {showTooltip && (
                   <div className="tooltip show absolute -top-12 left-1/2 transform -translate-x-1/2 w-64 z-20">
-                    Get a transcript by recording your lecture and using your device&apos;s speech-to-text feature
+                      Record your lecture or paste a transcript to get AI-powered summaries
+                    </div>
+                  )}
+                </div>
+                
+                {/* Recording Controls */}
+                <div className="flex items-center space-x-2">
+                  {!isRecording ? (
+                    <button
+                      onClick={startRecording}
+                      disabled={!recognition}
+                      className="btn-secondary text-sm px-4 py-2 flex items-center group disabled:opacity-50"
+                      title="Start recording"
+                    >
+                      <Mic className="w-4 h-4 mr-2 group-hover:scale-110 transition-transform" />
+                      Record
+                    </button>
+                  ) : (
+                    <button
+                      onClick={stopRecording}
+                      className="btn-primary text-sm px-4 py-2 flex items-center group"
+                      title="Stop recording"
+                    >
+                      <Square className="w-4 h-4 mr-2" />
+                      Stop
+                    </button>
+                  )}
+                  
+                  {isTranscribing && (
+                    <div className="flex items-center text-purple-400 text-sm">
+                      <div className="loading-spinner w-4 h-4 mr-2" />
+                      Transcribing...
                   </div>
                 )}
+                </div>
               </div>
             </div>
             
@@ -293,10 +390,7 @@ export default function Home() {
                 {charCount > 0 && (
                   <div className="absolute bottom-4 left-4 right-4 z-20">
                     <div className="h-1 bg-gray-700 rounded-full overflow-hidden">
-                      <div 
-                        className="h-full bg-gradient-to-r from-purple-500 to-blue-500 rounded-full transition-all duration-300"
-                        style={{ width: `${Math.min((charCount / 1000) * 100, 100)}%` }}
-                      ></div>
+                      {/* Progress bar removed to avoid inline styles */}
                     </div>
                   </div>
                 )}
@@ -409,6 +503,8 @@ export default function Home() {
                   className={`w-3 h-3 rounded-full transition-all duration-300 ${
                     currentSlide === index ? 'bg-purple-500 scale-125' : 'bg-gray-600 hover:bg-gray-500'
                   }`}
+                  aria-label={`Go to slide ${index + 1}`}
+                  title={`Go to slide ${index + 1}`}
                 />
               ))}
             </div>
