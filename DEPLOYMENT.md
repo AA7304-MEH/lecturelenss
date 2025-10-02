@@ -2,8 +2,6 @@
 
 ## ⚠️ IMPORTANT: Secret Reference Error Fix
 
-If you're seeing: **"Environment Variable 'GOOGLE_AI_API_KEY' references Secret 'google-ai-api-key', which does not exist"**
-
 ### 🔧 IMMEDIATE SOLUTION:
 
 1. **Delete your current Vercel project** (if deployment keeps failing)

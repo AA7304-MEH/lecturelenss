@@ -23,16 +23,7 @@
 
 Go to **Site settings** → **Environment variables** and add these:
 
-```
-GOOGLE_AI_API_KEY
-AIzaSyB11ouybVWoJ8cEZjqyvWpQLOXZLV1cVEc
 
-NEXT_PUBLIC_SUPABASE_URL
-https://jlftcryoscvofazjmjbm.supabase.co
-
-NEXT_PUBLIC_SUPABASE_ANON_KEY
-eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpsZnRjcnlvc2N2b2ZhemptamJtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg0NTMxOTgsImV4cCI6MjA3NDAyOTE5OH0.91hymcNQvOyAJSqHKJ73SzqSD2s3sTLd8KHmuOGhtao
-```
 
 ### Step 3: Redeploy
 

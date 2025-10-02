@@ -17,12 +17,7 @@ The issue is in `vercel.json` using `@secret-name` syntax, but we haven't create
 
 3. **Add these environment variables directly**:
 
-   ```
-   GOOGLE_AI_API_KEY = AIzaSyB11ouybVWoJ8cEZjqyvWpQLOXZLV1cVEc
-   NEXT_PUBLIC_SUPABASE_URL = https://jlftcryoscvofazjmjbm.supabase.co
-   NEXT_PUBLIC_SUPABASE_ANON_KEY = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpsZnRjcnlvc2N2b2ZhemptamJtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg0NTMxOTgsImV4cCI6MjA3NDAyOTE5OH0.91hymcNQvOyAJSqHKJ73SzqSD2s3sTLd8KHmuOGhtao
-   ```
-
+ 
 4. **Make sure to check all environments**: Production, Preview, Development
 
 5. **Redeploy**: Click "Redeploy" button or push a new commit
@@ -41,3 +36,11 @@ You can also remove the entire `env` section from `vercel.json` since we'll set 
 6. Click "Redeploy" on latest deployment
 
 Your deployment should work perfectly after this fix! 🎉
+
+```javascript
+// BAD
+const apiKey = "AIzaSyB11ouybVWoJ8cEZjqyvWpQLOXZLV1cVEc";
+
+// GOOD
+const apiKey = process.env.GOOGLE_AI_API_KEY;
+```
