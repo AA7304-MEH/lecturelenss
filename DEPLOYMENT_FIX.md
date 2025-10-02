@@ -16,8 +16,6 @@ The issue is in `vercel.json` using `@secret-name` syntax, but we haven't create
    - Go to: Settings → Environment Variables
 
 3. **Add these environment variables directly**:
-
- 
 4. **Make sure to check all environments**: Production, Preview, Development
 
 5. **Redeploy**: Click "Redeploy" button or push a new commit
@@ -38,8 +36,6 @@ You can also remove the entire `env` section from `vercel.json` since we'll set 
 Your deployment should work perfectly after this fix! 🎉
 
 ```javascript
-// BAD
-const apiKey = "AIzaSyB11ouybVWoJ8cEZjqyvWpQLOXZLV1cVEc";
 
 // GOOD
 const apiKey = process.env.GOOGLE_AI_API_KEY;
