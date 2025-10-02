@@ -111,7 +111,7 @@ export default function Home() {
     setIsLoading(true);
     
     try {
-      const response = await fetch("/api/summarize", {
+      const response = await fetch("/.netlify/functions/summarize", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -120,8 +120,8 @@ export default function Home() {
       });
 
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.error || `HTTP ${response.status}: Failed to generate summary`);
+        const errorData = await response.text();
+        throw new Error(errorData || `HTTP ${response.status}: Failed to generate summary`);
       }
 
       const data = await response.json();
@@ -136,6 +136,13 @@ export default function Home() {
       router.push("/results");
     } catch (error) {
       console.error("Error:", error);
+      if (showDemo) {
+        const offlineSummary = `# Sample Summary (Offline Demo)\n\n## Main Topic\nMachine Learning Fundamentals\n\n## Key Concepts\n- Supervised vs. Unsupervised vs. Reinforcement Learning\n- Labeled vs. Unlabeled Data\n- Agent, Rewards, and Policies\n\n## Takeaways\n- ML enables systems to learn from data without explicit programming.\n- Choose paradigm based on data availability and task.`;
+        sessionStorage.setItem("transcript", transcript);
+        sessionStorage.setItem("summary", offlineSummary);
+        router.push("/results");
+        return;
+      }
       alert(`Failed to generate summary: ${error instanceof Error ? error.message : 'Unknown error'}`);
     } finally {
       setIsLoading(false);

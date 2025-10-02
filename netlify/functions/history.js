@@ -1,7 +1,7 @@
 const { createClient } = require('@supabase/supabase-js');
 
-exports.handler = async (event, context) => {
-  // Handle CORS preflight
+exports.handler = async (event) => {
+  // CORS preflight
   if (event.httpMethod === 'OPTIONS') {
     return {
       statusCode: 200,
@@ -22,7 +22,7 @@ exports.handler = async (event, context) => {
   if (event.httpMethod === 'GET') {
     try {
       const { data, error } = await supabase
-        .from('summaries')
+        .from('transcripts')
         .select('*')
         .order('created_at', { ascending: false });
 
@@ -39,9 +39,7 @@ exports.handler = async (event, context) => {
     } catch (error) {
       return {
         statusCode: 500,
-        headers: {
-          'Access-Control-Allow-Origin': '*',
-        },
+        headers: { 'Access-Control-Allow-Origin': '*' },
         body: JSON.stringify({ error: 'Failed to fetch history' }),
       };
     }
@@ -49,18 +47,18 @@ exports.handler = async (event, context) => {
 
   if (event.httpMethod === 'POST') {
     try {
-      const { transcript, summary, title } = JSON.parse(event.body);
+      const { transcript, summary, title } = JSON.parse(event.body || '{}');
+      if (!transcript || !summary) {
+        return {
+          statusCode: 400,
+          headers: { 'Access-Control-Allow-Origin': '*', 'Content-Type': 'application/json' },
+          body: JSON.stringify({ error: 'Transcript and summary are required' }),
+        };
+      }
 
       const { data, error } = await supabase
-        .from('summaries')
-        .insert([
-          {
-            title,
-            transcript,
-            summary,
-            created_at: new Date().toISOString(),
-          },
-        ])
+        .from('transcripts')
+        .insert([{ title: title || 'Untitled Summary', transcript, summary }])
         .select();
 
       if (error) throw error;
@@ -76,9 +74,7 @@ exports.handler = async (event, context) => {
     } catch (error) {
       return {
         statusCode: 500,
-        headers: {
-          'Access-Control-Allow-Origin': '*',
-        },
+        headers: { 'Access-Control-Allow-Origin': '*' },
         body: JSON.stringify({ error: 'Failed to save summary' }),
       };
     }
@@ -86,9 +82,7 @@ exports.handler = async (event, context) => {
 
   return {
     statusCode: 405,
-    headers: {
-      'Access-Control-Allow-Origin': '*',
-    },
+    headers: { 'Access-Control-Allow-Origin': '*' },
     body: JSON.stringify({ error: 'Method not allowed' }),
   };
 };
