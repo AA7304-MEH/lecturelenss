@@ -4,9 +4,9 @@
 
 [![Next.js](https://img.shields.io/badge/Next.js-14-black?logo=next.js)](https://nextjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?logo=typescript)](https://www.typescriptlang.org/)
-[![Tailwind CSS](https://img.shields.io/badge/Tailwind-4-38bdf8?logo=tailwind-css)](https://tailwindcss.com/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind-3-38bdf8?logo=tailwind-css)](https://tailwindcss.com/)
 [![Supabase](https://img.shields.io/badge/Supabase-Database-green?logo=supabase)](https://supabase.com/)
-[![Vercel](https://img.shields.io/badge/Deployed-Vercel-black?logo=vercel)](https://vercel.com/)
+[![Netlify](https://img.shields.io/badge/Deployed-Netlify-black?logo=netlify)](https://netlify.com/)
 
 A stunning, AI-powered web application that transforms lecture transcripts into beautifully structured notes using Google Gemini AI. Built with modern web technologies and featuring an elegant glassmorphism design with smooth animations.
 
@@ -68,8 +68,8 @@ A stunning, AI-powered web application that transforms lecture transcripts into 
 - **[Next.js API Routes](https://nextjs.org/docs/api-routes/introduction)** - Serverless functions
 
 ### Deployment
-- **[Vercel](https://vercel.com/)** - Automatic deployment and hosting
-- **[GitHub Actions](https://github.com/features/actions)** - CI/CD pipeline
+- **[Netlify](https://netlify.com/)** - Automatic deployment and hosting
+- **[Netlify Functions](https://docs.netlify.com/functions/overview/)** - Serverless API functions
 
 ## 🏃‍♂️ Quick Start
 
@@ -90,14 +90,19 @@ npm install
 ```
 
 ### 3. Environment Setup
-Create `.env.local` file:
+Copy the example environment file and configure your API keys:
+```bash
+cp .env.example .env.local
+```
+
+Edit `.env.local` with your actual API keys:
 ```env
 # Google Gemini API key (get from https://aistudio.google.com/)
-GOOGLE_AI_API_KEY=your_gemini_api_key_here
+GOOGLE_AI_API_KEY=your_actual_gemini_api_key_here
 
-# Supabase configuration
-NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+# Supabase configuration (get from https://supabase.com/)
+NEXT_PUBLIC_SUPABASE_URL=https://your-project-id.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_actual_supabase_anon_key_here
 ```
 
 ### 4. Database Setup
@@ -172,32 +177,32 @@ lecturelens/
 
 ## 🚀 Deployment
 
-### Automatic Deployment with Vercel
+### Automatic Deployment with Netlify
 
-1. **Connect to Vercel**
-   - Go to [vercel.com](https://vercel.com)
-   - Import your GitHub repository
-   - Vercel will auto-detect Next.js
+1. **Connect to Netlify**
+    - Go to [netlify.com](https://netlify.com)
+    - Import your GitHub repository
+    - Netlify will auto-detect Next.js
 
 2. **Environment Variables**
-   Add these in Vercel dashboard:
-   ```
-   GOOGLE_AI_API_KEY=your_gemini_api_key
-   NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
-   NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
-   ```
+    Add these in Netlify dashboard (Site Settings → Environment variables):
+    ```
+    GOOGLE_AI_API_KEY=your_gemini_api_key
+    NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+    NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+    ```
 
 3. **Deploy**
-   - Push to main branch
-   - Vercel automatically deploys
-   - Get your live URL!
+    - Push to main branch
+    - Netlify automatically deploys
+    - Get your live URL!
 
 ### Manual Deployment
 ```bash
 # Build for production
 npm run build
 
-# Start production server
+# Preview build locally
 npm start
 ```
 
@@ -273,18 +278,59 @@ We love contributions! Here's how to get started:
 - [ ] Integration with popular note apps
 - [ ] Advanced analytics dashboard
 
-## 🆘 Support
+## 🆘 Support & Troubleshooting
 
-### Common Issues
+### ⚡ Quick Setup Check
 
-**Q: The summary generation is slow**
-A: Check your internet connection. Gemini API can take 10-30 seconds for long transcripts.
+Before reporting issues, verify:
 
-**Q: Getting API errors**
-A: Verify your environment variables are set correctly in `.env.local`.
+1. **✅ Environment Variables**
+   ```bash
+   # Check if .env.local exists and has real values
+   cat .env.local
+   # Should show your actual API keys, not placeholder text
+   ```
 
-**Q: Database connection issues**
-A: Check your Supabase URL and anon key. Ensure RLS policies are configured.
+2. **✅ Dependencies Installed**
+   ```bash
+   npm list @google/generative-ai @supabase/supabase-js
+   ```
+
+3. **✅ Database Setup**
+   - Run the SQL script in Supabase SQL Editor
+   - Verify RLS policies are enabled
+
+### Common Issues & Solutions
+
+**❌ Build Fails: "Invalid supabaseUrl"**
+- **Cause**: Environment variables contain placeholder values
+- **Solution**: Set real API keys in `.env.local` and Netlify dashboard
+
+**❌ Runtime Error: "Google AI API key not configured"**
+- **Cause**: `GOOGLE_AI_API_KEY` not set or invalid
+- **Solution**: Get a valid API key from [Google AI Studio](https://aistudio.google.com/)
+
+**❌ Database Connection Issues**
+- **Cause**: Supabase credentials incorrect or RLS policies not set
+- **Solution**:
+  1. Verify Project URL and anon key in Supabase dashboard
+  2. Run the SQL script in Supabase SQL Editor
+  3. Check RLS policies are properly configured
+
+**❌ Deployment Issues on Netlify**
+- **Cause**: Missing environment variables in Netlify dashboard
+- **Solution**:
+  1. Go to Netlify Dashboard → Site Settings → Environment variables
+  2. Add all required variables with real values
+  3. Trigger a new deploy
+
+**❌ Summary Generation is Slow**
+- **Cause**: Long transcripts or API rate limits
+- **Solution**: Keep transcripts under 10,000 characters for faster processing
+
+**❌ Styling Issues**
+- **Cause**: Missing Tailwind CSS build
+- **Solution**: Ensure PostCSS and Autoprefixer are installed and configured
 
 ### Get Help
 - 📧 **Email**: [support@lecturelens.com](mailto:support@lecturelens.com)
@@ -299,7 +345,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 - **Google Gemini AI** - Powering our intelligent summarization
 - **Supabase** - Providing reliable database infrastructure
-- **Vercel** - Hosting and deployment platform
+- **Netlify** - Hosting and deployment platform
 - **Tailwind CSS** - Beautiful utility-first styling
 - **Lucide** - Clean and consistent icons
 - **Open Source Community** - For incredible tools and inspiration
@@ -366,16 +412,13 @@ FOR ALL USING (true);
 
 ### 4. Configure Environment Variables
 
-Create a `.env.local` file in the root directory:
+Copy the example environment file:
 
-```env
-# Google Gemini API Key (from step 2)
-GOOGLE_AI_API_KEY=your_actual_gemini_api_key_here
-
-# Supabase Configuration (from step 3)
-NEXT_PUBLIC_SUPABASE_URL=your_project_url_here
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key_here
+```bash
+cp .env.example .env.local
 ```
+
+Edit `.env.local` and replace the placeholder values with your actual API keys from steps 2 and 3.
 
 ### 5. Run Locally
 
@@ -385,22 +428,23 @@ npm run dev
 
 Visit `http://localhost:3000` to see your app!
 
-## 🌐 Deploy to Vercel (Free)
+## 🌐 Deploy to Netlify (Free)
 
 ### Option 1: Deploy with Git
 
 1. Push your code to GitHub
-2. Visit [Vercel](https://vercel.com/)
-3. Sign up/in and click "New Project"
+2. Visit [Netlify](https://netlify.com/)
+3. Sign up/in and click "Add new site"
 4. Import your GitHub repository
-5. Add your environment variables in the Vercel dashboard
+5. Add your environment variables in the Netlify dashboard (Site Settings → Environment variables)
 6. Deploy!
 
-### Option 2: Deploy with Vercel CLI
+### Option 2: Deploy with Netlify CLI
 
 ```bash
-npm i -g vercel
-vercel
+npm install -g netlify-cli
+netlify login
+netlify init
 ```
 
 Follow the prompts and add your environment variables when prompted.
@@ -455,7 +499,7 @@ lecturelens/
 
 - **Google Gemini**: 60 requests per minute, generous free quota
 - **Supabase**: 50MB database, 2GB bandwidth per month
-- **Vercel**: 100GB bandwidth, unlimited deployments
+- **Netlify**: 100GB bandwidth, unlimited deployments
 
 These limits are more than sufficient for personal use and small teams.
 
