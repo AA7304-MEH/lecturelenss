@@ -15,7 +15,7 @@ The issue is in `vercel.json` using `@secret-name` syntax, but we haven't create
    - Visit your project: https://vercel.com/dashboard
    - Go to: Settings → Environment Variables
 
-3. **Add these environment variables directly**:
+
 4. **Make sure to check all environments**: Production, Preview, Development
 
 5. **Redeploy**: Click "Redeploy" button or push a new commit

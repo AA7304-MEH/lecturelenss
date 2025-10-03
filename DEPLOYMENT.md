@@ -16,6 +16,49 @@
 - [x] Vercel account
 - [x] Environment variables ready
 
+## 🔐 Security Configuration
+
+### Environment Variables Setup
+
+**⚠️ IMPORTANT: Never commit API keys to version control!**
+
+#### Required Environment Variables:
+
+1. **Google AI API Key** (Secret - Server-side only)
+   - Get from: https://aistudio.google.com/ (free)
+   - **Set this in your deployment platform only** (Vercel/Netlify dashboard)
+   - **DO NOT add to any `.env` files that will be committed**
+
+2. **Supabase Configuration** (Public - Safe for frontend)
+   ```bash
+   NEXT_PUBLIC_SUPABASE_URL=https://jlftcryoscvofazjmjbm.supabase.co
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+   ```
+   - These are safe to include in `.env` files as they are designed for frontend use
+   - The `anon` key is specifically designed for Row Level Security (RLS) policies
+
+#### Secure Setup Process:
+
+1. **For Vercel Deployment:**
+   - Go to Vercel Dashboard → Your Project → Settings → Environment Variables
+   - Add `GOOGLE_AI_API_KEY` with your actual API key value
+   - Add the Supabase variables (already in `.env.production`)
+
+2. **For Netlify Deployment:**
+   - Go to Netlify Dashboard → Site Settings → Environment Variables
+   - Add `GOOGLE_AI_API_KEY` with your actual API key value
+   - Add the Supabase variables (already in `.env.netlify`)
+
+3. **Local Development:**
+   - Copy `.env.local` and add your `GOOGLE_AI_API_KEY`
+   - This file is gitignored and safe for local development only
+
+#### Security Verification:
+- ✅ Google AI API key is only in deployment platform environment variables
+- ✅ Supabase keys use `NEXT_PUBLIC_` prefix (designed for frontend)
+- ✅ All `.env*` files are properly gitignored
+- ✅ No API keys are exposed in frontend code
+
 ## 🚀 Step-by-Step Deployment (FIXED VERSION)
 
 ### Method 1: Fresh Vercel Project (Recommended)
