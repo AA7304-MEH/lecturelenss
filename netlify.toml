@@ -2,25 +2,22 @@
   publish = ".next"
   command = "npm run build"
 
+[build.environment]
+  NODE_VERSION = "20"
+
 # Redirects for SPA routing
 [[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
 
-[build.environment]
-  NODE_VERSION = "20"
-
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
-
+# API routes to Netlify Functions
 [[redirects]]
   from = "/api/*"
   to = "/.netlify/functions/:splat"
   status = 200
 
+# CORS headers for API routes
 [[headers]]
   for = "/api/*"
   [headers.values]
@@ -30,21 +27,3 @@
 
 [functions]
   node_bundler = "esbuild"
-  external_node_modules = ["@google/generative-ai", "@supabase/supabase-js"]
-
-# Disable secrets scanning for this project since we use environment variables
-[build.processing]
-  skip_processing = false
-[build.processing.css]
-  bundle = true
-  minify = true
-[build.processing.js]
-  bundle = true
-  minify = true
-[build.processing.html]
-  pretty_urls = true
-
-# Environment variables that should be ignored by secrets scanning
-# Since we're using proper environment variable setup, disable strict secrets scanning
-[[context.production.environment]]
-  SECRETS_SCAN_ENABLED = "false"
