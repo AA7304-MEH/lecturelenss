@@ -1,9 +1,17 @@
-import { supabase } from '@/lib/supabase';
+import { supabase, supabaseConfigValid } from '@/lib/supabase';
 import { NextRequest, NextResponse } from 'next/server';
 
 export const dynamic = 'force-static';
 
 export async function GET() {
+  // Check if Supabase is properly configured
+  if (!supabaseConfigValid) {
+    return NextResponse.json(
+      { error: 'Supabase not configured. Please set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY environment variables.' },
+      { status: 500 }
+    );
+  }
+
   try {
     const { data, error } = await supabase
       .from('transcripts')
@@ -29,6 +37,14 @@ export async function GET() {
 }
 
 export async function POST(request: NextRequest) {
+  // Check if Supabase is properly configured
+  if (!supabaseConfigValid) {
+    return NextResponse.json(
+      { error: 'Supabase not configured. Please set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY environment variables.' },
+      { status: 500 }
+    );
+  }
+
   try {
     const { transcript, summary, title } = await request.json();
 

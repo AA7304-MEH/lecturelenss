@@ -3,8 +3,6 @@ import { NextRequest, NextResponse } from 'next/server';
 
 export const dynamic = 'force-static';
 
-const genAI = new GoogleGenerativeAI(process.env.GOOGLE_AI_API_KEY!);
-
 export async function POST(request: NextRequest) {
   try {
     const { transcript } = await request.json();
@@ -16,12 +14,15 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (!process.env.GOOGLE_AI_API_KEY) {
+    if (!process.env.GOOGLE_AI_API_KEY || process.env.GOOGLE_AI_API_KEY === 'your_google_ai_api_key_here') {
       return NextResponse.json(
-        { error: 'Google AI API key not configured' },
+        { error: 'Google AI API key not configured. Please set GOOGLE_AI_API_KEY environment variable.' },
         { status: 500 }
       );
     }
+
+    // Initialize Google AI only when we have a valid API key
+    const genAI = new GoogleGenerativeAI(process.env.GOOGLE_AI_API_KEY);
 
     const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
 
